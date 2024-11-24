@@ -6,49 +6,76 @@ from .components import (
     memory_table,
 )
 from .styles import apply_global_styles
+from computer.simulator import Simulator
 
 
 class UserInterface:
     def __init__(self) -> None:
-        pass
+        self.simulator = Simulator()
 
     def render(self) -> None:
+
+        self.simulator.simulation()
+
         st.set_page_config(layout="wide")
         apply_global_styles()  # Estilos globales
 
         # Contenedor principal
         with st.container():
-            col1, col2, col3 = st.columns([1.5, 1, 1.5])
+            col1, col2, col3, col4 = st.columns([1.5, 1, 1, 1])
 
             # Columna izquierda (CPU y registros)
             with col1:
                 self.display_cpu()
+                self.display_simulation_controls(self.simulator)
 
             # Columna central (Buses)
             with col2:
                 self.display_system_buses()
-
                 self.display_input_device()
+                self.display_output_device()
 
             # Columna derecha (Memoria)
             with col3:
-                self.display_memory()
-                self.display_output_device()
+                self.display_data_memory()
 
-    def display_memory(self):
+            with col4:
+                self.display_program_memory()
+
+    def display_simulation_controls(self, simulator: Simulator):
+        st.write("### Controles de la simulación")
+        col_controls = st.columns([1, 1])
+
+        with col_controls[0]:
+            if st.button("Paso"):
+                simulator.step()
+                st.rerun()
+
+        with col_controls[1]:
+            if st.button("Reset"):
+                simulator.restart()
+                st.rerun()
+
+    def display_data_memory(self):
         st.markdown("### Memoria")
-        data_memory = [("0x0000", "0x1234"), ("0x0001", "0x5678")]
-        program_memory = [("0x0000", "LOAD"), ("0x0001", "ADD")]
-        memory_table("Memoria de Datos", data_memory)
-        memory_table("Memoria de Programa", program_memory)
+        memory_table(
+            "Memoria de Datos", st.session_state.computer_state.data_memory.get_all()
+        )
+
+    def display_program_memory(self):
+        st.markdown("### ")
+        memory_table(
+            "Memoria de Programa",
+            st.session_state.computer_state.program_memory.get_all(),
+        )
 
     def display_system_buses(self):
         st.markdown("### Bus del sistema")
         # Contenedores para los buses
         for bus_type in [
-            "Bus de control",
-            "Bus de direcciones",
-            "Bus de datos",
+            f"Bus de control:     {st.session_state.computer_state.system_bus.control_bus}",
+            f"Bus de direcciones: {st.session_state.computer_state.system_bus.address_bus}",
+            f"Bus de datos:       {st.session_state.computer_state.system_bus.data_bus}",
         ]:
             st.markdown(
                 f"""
@@ -73,43 +100,72 @@ class UserInterface:
         # Primera fila de la columna izquierda
         subcol1, subcol2 = st.columns(2)
         with subcol1:
-            cpu_value_container("PC", "0x0000")
+            cpu_value_container(
+                "PC", st.session_state.computer_state.system_registers.pc
+            )
         with subcol2:
-            cpu_value_container("UC", "FETCH")
+            cpu_value_container("UC", st.session_state.computer_state.cycle.value)
 
         # Segunda fila
         subcol3, subcol4 = st.columns(2)
         with subcol3:
-            cpu_value_container("IR", "0x0000")
+            cpu_value_container(
+                "IR", st.session_state.computer_state.system_registers.ir
+            )
         with subcol4:
-            cpu_value_container("MAR", "0x0000")
+            cpu_value_container(
+                "MAR", st.session_state.computer_state.system_registers.mar
+            )
 
         # Tercera fila
         subcol5, subcol6 = st.columns(2)
         with subcol5:
-            psw_container(True, False, True)
+            psw_container(
+                st.session_state.computer_state.psw.zero,
+                st.session_state.computer_state.psw.negative,
+                st.session_state.computer_state.psw.interrupt,
+            )
         with subcol6:
-            cpu_value_container("MBR", "0x0000")
+            cpu_value_container(
+                "MBR", st.session_state.computer_state.system_registers.mbr
+            )
 
         # Cuarta fila
         subcol7, subcol8 = st.columns(2)
         with subcol7:
-            # alu_container("R1 + R2", "0x00FF")  # Ejemplo con suma de R1 y R2
-            alu_container("R1", "R2", "AND", "FALSE")
+            alu_container(
+                st.session_state.computer_state.alu.operator1,
+                st.session_state.computer_state.alu.operator2,
+                st.session_state.computer_state.alu.operation,
+                st.session_state.computer_state.alu.result,
+            )
 
         with subcol8:
-            # Registros de usuario
             registers_data = [
-                ("AL", "0x0000"),
-                ("BL", "0x0000"),
-                ("CL", "0x0000"),
-                ("DL", "0x0000"),
+                ("R1", st.session_state.computer_state.user_registers.R1),
+                ("R2", st.session_state.computer_state.user_registers.R2),
+                ("R3", st.session_state.computer_state.user_registers.R3),
+                ("R4", st.session_state.computer_state.user_registers.R4),
             ]
             memory_table("Registros de Usuario", registers_data)
 
     def display_input_device(self):
         st.markdown("### Dispositivo de entrada")
-        st.text_area(label="", placeholder="Escriba su programa aquí...", height=200)
+        program_input: str = st.text_area(
+            label="J.E.S.-Assembly",
+            placeholder="Escriba su programa aquí...",
+            height=200,
+        )
+
+        col1, col2 = st.columns([0.3, 0.7])
+        with col1:
+            if st.button("Cargar programa"):
+                with col2:
+                    try:
+                        self.simulator.load_program(program_input)
+                        st.success("Programa cargado correctamente")
+                    except Exception as e:
+                        st.error(f"Error: {e}")
 
     def display_output_device(self):
         st.markdown("### Dispositivo de salida")
