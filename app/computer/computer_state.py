@@ -11,7 +11,7 @@ from computer.memory.memory import Memory
 
 @dataclass
 class ComputerState:
-    cycle: CycleState = CycleState.FETCH
+    cycle: CycleState = CycleState.WAITING
     alu: ALU = field(default_factory=ALU)
     system_registers: SystemRegisters = field(default_factory=SystemRegisters)
     psw: PSW = field(default_factory=PSW)
@@ -19,3 +19,4 @@ class ComputerState:
     system_bus: SystemBus = field(default_factory=SystemBus)
     data_memory: Memory = field(default_factory=lambda: Memory(8, "data"))
     program_memory: Memory = field(default_factory=lambda: Memory(8, "program"))
+    actual_micro_operation: int = 0

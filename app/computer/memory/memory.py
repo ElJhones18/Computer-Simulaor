@@ -12,8 +12,9 @@ class Memory:
         return self.memory
 
     def read(self, address: str) -> str:
-        addr = int(address, 2)
-        return self.memory[addr][1]
+        for addr, value in self.memory:
+            if addr == address:
+                return value
 
     def write(self, address: str, value: str):
         for i, (addr, _) in enumerate(self.memory):

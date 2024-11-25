@@ -2,10 +2,14 @@ from enum import Enum
 
 
 class CycleState(Enum):
-    FETCH = "FETCH"
+    WAITING = "WAITING"
+    FETCH_INS = "FETCH INSTRUCTION"
     DECODE = "DECODE"
+    CALCULATE_OP = "CALCULATE OPERAND"
+    FETCH_OP = "FETCH OPERAND"
     EXECUTE = "EXECUTE"
-    STORE = "STORE"
+    CALCULATE_RES = "CALCULATE RESULT"
+    WRITE = "WRITE"
 
     @classmethod
     def next_state(cls, current_state):

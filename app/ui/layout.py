@@ -1,6 +1,7 @@
 import streamlit as st
 from .components import (
     cpu_value_container,
+    display_bus,
     psw_container,
     alu_container,
     memory_table,
@@ -47,7 +48,7 @@ class UserInterface:
         col_controls = st.columns([1, 1])
 
         with col_controls[0]:
-            if st.button("Paso"):
+            if st.button("Paso", disabled=st.session_state.computer_state.cycle.value == "WAITING"):
                 simulator.step()
                 st.rerun()
 
@@ -72,27 +73,9 @@ class UserInterface:
     def display_system_buses(self):
         st.markdown("### Bus del sistema")
         # Contenedores para los buses
-        for bus_type in [
-            f"Bus de control:     {st.session_state.computer_state.system_bus.control_bus}",
-            f"Bus de direcciones: {st.session_state.computer_state.system_bus.address_bus}",
-            f"Bus de datos:       {st.session_state.computer_state.system_bus.data_bus}",
-        ]:
-            st.markdown(
-                f"""
-                        <div style="
-                            border: 2px solid #00FFFF;
-                            padding: 10px;
-                            margin: 16px 0;
-                            border-radius: 5px;
-                            color: white;
-                            text-shadow: 0 0 5px #00FFFF;
-                            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-                        ">
-                            {bus_type}
-                        </div>
-                        """,
-                unsafe_allow_html=True,
-            )
+        display_bus("Bus de control", st.session_state.computer_state.system_bus.control_bus)
+        display_bus("Bus de direcciones", st.session_state.computer_state.system_bus.address_bus)
+        display_bus("Bus de datos", st.session_state.computer_state.system_bus.data_bus)
 
     def display_cpu(self):
         st.markdown("### CPU")
@@ -159,11 +142,12 @@ class UserInterface:
 
         col1, col2 = st.columns([0.3, 0.7])
         with col1:
-            if st.button("Cargar programa"):
+            if st.button("Cargar programa", disabled=st.session_state.computer_state.cycle.value != "WAITING"):
                 with col2:
                     try:
                         self.simulator.load_program(program_input)
                         st.success("Programa cargado correctamente")
+                        st.rerun()
                     except Exception as e:
                         st.error(f"Error: {e}")
 

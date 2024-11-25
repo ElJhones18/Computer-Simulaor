@@ -1,7 +1,10 @@
+import time
+from computer.cpu.control_unit import ControlUnit
 from computer.memory.memory import Memory
 from computer.assembly.parser import Parser
 from computer.cpu.psw import PSW
 from computer.computer_state import ComputerState
+from computer.cycle_state import CycleState
 import streamlit as st
 
 
@@ -9,16 +12,14 @@ class Simulator:
 
     def __init__(self) -> None:
         self.parser = Parser()
+        self.uc = ControlUnit()
 
     def simulation(self):
         self.initialize_state()
 
     def step(self):
-        computer: ComputerState = st.session_state.computer_state
-        computer.psw.zero = not computer.psw.zero
-
-        computer.user_registers.R1 = "buenisima"
-        self.update_computer_state(computer)
+        computer_state: ComputerState = st.session_state.computer_state
+        self.uc.instruction_cycle(computer_state)
 
     """
     input/output
@@ -37,6 +38,7 @@ class Simulator:
         for i, binary in enumerate(binary_instructions):
             address = memory.memory[i][0]
             memory.write(address, binary)
+        st.session_state.computer_state.cycle = CycleState.FETCH_INS
 
     """
     Simulator states

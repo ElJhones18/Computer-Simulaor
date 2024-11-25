@@ -73,3 +73,20 @@ def memory_table(title, data):
         </div>
     """
     st.markdown(content, unsafe_allow_html=True)
+
+
+def display_bus(label, value):
+    content = f"""
+            <div style="
+            border: 2px solid #00FFFF;
+            padding: 10px;
+            margin: 16px 0;
+            border-radius: 5px;
+            color: white;
+            text-shadow: 0 0 5px #00FFFF;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            ">
+            {label}: {value}
+            </div>
+        """
+    st.markdown(content, unsafe_allow_html=True)

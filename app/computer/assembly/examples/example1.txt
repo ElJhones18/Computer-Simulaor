@@ -1,0 +1,6 @@
+inicio: MOV R1 5    ; Cargar 5 en R1
+        MOV R2 3    ; Cargar 3 en R2
+        ADD R1 R2   ; R1 = R1 + R2
+        JZ  fin     ; Si es cero, saltar a fin
+        MUL R1 R2   ; R1 = R1 * R2
+fin:    MOV #10 R1  ; Guardar R1 en memoria
