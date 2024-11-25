@@ -1,23 +1,15 @@
 import streamlit as st
+from computer.assembly.opcodes_and_types import OpcodesAndTypes
+
+
 class Parser:
     def __init__(self):
         # Diccionario de códigos de operación
-        self.opcodes = {
-            "ADD": "0000",
-            "SUB": "0001",
-            "MUL": "0010",
-            "DIV": "0011",
-            "MOV": "0100",
-            "JMP": "0101",
-            "JZ": "0110",
-            "JN": "0111",
-        }
-
-        # Tipos de operandos (2 bits)
-        self.TIPO_NUMERO = "00"
-        self.TIPO_REGISTRO = "01"
-        self.TIPO_MEMORIA = "10"
-        self.TIPO_ETIQUETA = "11"
+        self.opcodes = OpcodesAndTypes.opcodes
+        self.TIPO_NUMERO = OpcodesAndTypes.TIPO_NUMERO
+        self.TIPO_REGISTRO = OpcodesAndTypes.TIPO_REGISTRO
+        self.TIPO_MEMORIA = OpcodesAndTypes.TIPO_MEMORIA
+        self.TIPO_ETIQUETA = OpcodesAndTypes.TIPO_ETIQUETA
 
         self.labels = {}
         self.current_address = 0
@@ -69,22 +61,6 @@ class Parser:
 
         else:
             raise ValueError(f"Operando inválido: {operand}")
-
-    def decode_operand(self, binary):
-        """Decodifica un operando binario a su representación simbólica"""
-        tipo = binary[:2]
-        valor = int(binary[2:], 2)
-
-        if tipo == self.TIPO_NUMERO:
-            return str(valor)
-        elif tipo == self.TIPO_REGISTRO:
-            return f"R{valor}"
-        elif tipo == self.TIPO_MEMORIA:
-            return f"#{valor}"
-        elif tipo == self.TIPO_ETIQUETA:
-            return f"etiq_{valor}"  # Representación simbólica de la etiqueta
-        else:
-            raise ValueError(f"Tipo de operando inválido: {tipo}")
 
     def first_pass(self, program):
         """Primer paso: recolectar las etiquetas y sus direcciones"""
@@ -138,7 +114,7 @@ class Parser:
                 raise ValueError(f"Operando 1 debe ser un registro o dirección")
             binary += self.encode_operand(tokens[1])
             binary += self.encode_operand(tokens[2])
-    
+
         return binary
 
     def parse_program(self, program):
@@ -160,33 +136,7 @@ class Parser:
             binary = self.parse_instruction(line)
             if binary:
                 binary_instructions.append(binary)
-                
+
         # print(self.labels)
 
         return binary_instructions
-
-    def decode_instruction(self, binary):
-        """Decodifica una instrucción binaria a su representación simbólica"""
-        if len(binary) != 16:
-            raise ValueError("La instrucción debe ser de 16 bits")
-
-        # Extraer partes de la instrucción
-        opcode_bin = binary[:4]
-        operand1_bin = binary[4:10]
-        operand2_bin = binary[10:]
-
-        # Encontrar el código de operación
-        opcode = None
-        for op, code in self.opcodes.items():
-            if code == opcode_bin:
-                opcode = op
-                break
-
-        if opcode is None:
-            raise ValueError(f"Código de operación inválido: {opcode_bin}")
-
-        # Decodificar operandos
-        operand1 = self.decode_operand(operand1_bin)
-        operand2 = self.decode_operand(operand2_bin)
-
-        return f"{opcode} {operand1} {operand2}"

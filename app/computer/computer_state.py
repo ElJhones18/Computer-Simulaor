@@ -20,3 +20,4 @@ class ComputerState:
     data_memory: Memory = field(default_factory=lambda: Memory(8, "data"))
     program_memory: Memory = field(default_factory=lambda: Memory(8, "program"))
     actual_micro_operation: int = 0
+    actual_insstruction: str = ""

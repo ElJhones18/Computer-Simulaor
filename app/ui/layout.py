@@ -56,6 +56,8 @@ class UserInterface:
             if st.button("Reset"):
                 simulator.restart()
                 st.rerun()
+        
+        st.write(f"##### **Instrucción actual** >>  *{st.session_state.computer_state.actual_insstruction}*")
 
     def display_data_memory(self):
         st.markdown("### Memoria")
