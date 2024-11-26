@@ -19,5 +19,5 @@ class Memory:
     def write(self, address: str, value: str):
         for i, (addr, _) in enumerate(self.memory):
             if addr == address:
-                self.memory[i] = (address, value)
+                self.memory[i] = (address, value.zfill(16))
                 break

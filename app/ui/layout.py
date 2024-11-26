@@ -23,7 +23,7 @@ class UserInterface:
 
         # Contenedor principal
         with st.container():
-            col1, col2, col3, col4 = st.columns([1.5, 1, 1, 1])
+            col1, col2, col3 = st.columns([1.5, 1, 2])
 
             # Columna izquierda (CPU y registros)
             with col1:
@@ -38,26 +38,53 @@ class UserInterface:
 
             # Columna derecha (Memoria)
             with col3:
-                self.display_data_memory()
+                subcol1, subcol2 = st.columns(2)
+                with subcol1:
+                    self.display_data_memory()
 
-            with col4:
-                self.display_program_memory()
+                with subcol2:
+                    self.display_program_memory()
+
+                self.display_info()
+
+    def display_info(self):
+        st.write("### Información de la simulación")
+
+        st.write(f" **Señal de control 1** = *Pedir a memoria*")
+        st.write(f" **Señal de control 0** = *Escribir en memoria*")
+
+        if st.session_state.computer_state.cycle.value == "EXECUTE":
+            st.write(
+                "**Ciclo de ejecución actual:** "
+                + (
+                    "*Fetching operand*"
+                    if st.session_state.computer_state.fetching_operand
+                    else "*Executing instruction*"
+                )
+            )
 
     def display_simulation_controls(self, simulator: Simulator):
         st.write("### Controles de la simulación")
         col_controls = st.columns([1, 1])
 
         with col_controls[0]:
-            if st.button("Paso", disabled=st.session_state.computer_state.cycle.value == "WAITING"):
+            if st.button(
+                "Paso",
+                disabled=st.session_state.computer_state.cycle.value == "WAITING",
+            ):
                 simulator.step()
+                # if st.session_state.computer_state.cycle.value == "WAITING":
+                #     simulator.restart()
                 st.rerun()
 
         with col_controls[1]:
             if st.button("Reset"):
                 simulator.restart()
                 st.rerun()
-        
-        st.write(f"##### **Instrucción actual** >>  *{st.session_state.computer_state.actual_insstruction}*")
+
+        st.write(
+            f"##### **Instrucción actual** >>  *{st.session_state.computer_state.actual_insstruction}*"
+        )
 
     def display_data_memory(self):
         st.markdown("### Memoria")
@@ -75,8 +102,12 @@ class UserInterface:
     def display_system_buses(self):
         st.markdown("### Bus del sistema")
         # Contenedores para los buses
-        display_bus("Bus de control", st.session_state.computer_state.system_bus.control_bus)
-        display_bus("Bus de direcciones", st.session_state.computer_state.system_bus.address_bus)
+        display_bus(
+            "Bus de control", st.session_state.computer_state.system_bus.control_bus
+        )
+        display_bus(
+            "Bus de direcciones", st.session_state.computer_state.system_bus.address_bus
+        )
         display_bus("Bus de datos", st.session_state.computer_state.system_bus.data_bus)
 
     def display_cpu(self):
@@ -144,7 +175,10 @@ class UserInterface:
 
         col1, col2 = st.columns([0.3, 0.7])
         with col1:
-            if st.button("Cargar programa", disabled=st.session_state.computer_state.cycle.value != "WAITING"):
+            if st.button(
+                "Cargar programa",
+                disabled=st.session_state.computer_state.cycle.value != "WAITING",
+            ):
                 with col2:
                     try:
                         self.simulator.load_program(program_input)

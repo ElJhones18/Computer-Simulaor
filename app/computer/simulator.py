@@ -26,6 +26,8 @@ class Simulator:
     """
 
     def load_program(self, program: str):
+        
+        st.session_state.computer_state.data_memory.write("0011", "1100000000000011")
         """Carga un programa en memoria"""
         binary_instructions = self.parser.parse_program(program)
 
