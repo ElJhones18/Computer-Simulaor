@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class UserRegisters:
     R1: str = "0000"
-    R2: str = "0001"
+    R2: str = "0000"
     R3: str = "0000"
     R4: str = "0000"
 

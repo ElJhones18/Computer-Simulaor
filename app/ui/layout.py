@@ -28,13 +28,11 @@ class UserInterface:
             # Columna izquierda (CPU y registros)
             with col1:
                 self.display_cpu()
-                self.display_simulation_controls(self.simulator)
 
             # Columna central (Buses)
             with col2:
                 self.display_system_buses()
                 self.display_input_device()
-                self.display_output_device()
 
             # Columna derecha (Memoria)
             with col3:
@@ -45,23 +43,11 @@ class UserInterface:
                 with subcol2:
                     self.display_program_memory()
 
-                self.display_info()
-
-    def display_info(self):
-        st.write("### Información de la simulación")
-
-        st.write(f" **Señal de control 1** = *Pedir a memoria*")
-        st.write(f" **Señal de control 0** = *Escribir en memoria*")
-
-        if st.session_state.computer_state.cycle.value == "EXECUTE":
-            st.write(
-                "**Ciclo de ejecución actual:** "
-                + (
-                    "*Fetching operand*"
-                    if st.session_state.computer_state.fetching_operand
-                    else "*Executing instruction*"
-                )
-            )
+            col4, col5, col6 = st.columns([1.5, 1, 2])
+            with col4:
+                self.display_simulation_controls(self.simulator)
+            with col5:
+                self.display_output_device()
 
     def display_simulation_controls(self, simulator: Simulator):
         st.write("### Controles de la simulación")
@@ -165,18 +151,18 @@ class UserInterface:
             ]
             memory_table("Registros de Usuario", registers_data)
 
-    def display_input_device(self):
+    def display_input_device(self): 
         st.markdown("### Dispositivo de entrada")
         program_input: str = st.text_area(
             label="J.E.S.-Assembly",
             placeholder="Escriba su programa aquí...",
-            height=200,
-        )
+            height=180,
+        )   
 
         col1, col2 = st.columns([0.3, 0.7])
         with col1:
             if st.button(
-                "Cargar programa",
+                "Cargar",
                 disabled=st.session_state.computer_state.cycle.value != "WAITING",
             ):
                 with col2:

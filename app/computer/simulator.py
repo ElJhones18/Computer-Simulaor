@@ -25,9 +25,7 @@ class Simulator:
     input/output
     """
 
-    def load_program(self, program: str):
-        
-        st.session_state.computer_state.data_memory.write("0011", "1100000000000011")
+    def load_program(self, program: str):        
         """Carga un programa en memoria"""
         binary_instructions = self.parser.parse_program(program)
 

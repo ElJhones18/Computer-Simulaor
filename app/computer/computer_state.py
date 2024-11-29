@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from computer.system_bus.address_bus import SystemBus
+from computer.system_bus.system_bus import SystemBus
 from computer.cpu.alu import ALU
 from computer.cpu.psw import PSW
 from computer.cpu.registers import SystemRegisters
@@ -21,4 +21,3 @@ class ComputerState:
     program_memory: Memory = field(default_factory=lambda: Memory(8, "program"))
     actual_micro_operation: int = 0
     actual_insstruction: str = ""
-    fetching_operand: bool = True

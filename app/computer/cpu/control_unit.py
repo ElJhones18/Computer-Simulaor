@@ -2,7 +2,9 @@ from computer.computer_state import ComputerState
 from computer.cycle_state import CycleState
 import streamlit as st
 from computer.assembly.opcodes_and_types import OpcodesAndTypes
-from computer.assembly.execution_helper import execute_transfer_instruction
+from computer.cpu.execution_helpers.transfer_instruction import (
+    execute_transfer_instruction,
+)
 
 
 class ControlUnit:
@@ -21,7 +23,10 @@ class ControlUnit:
             self.fetch_instruction(computer_state)
         elif computer_state.cycle == CycleState.DECODE:
             self.decode(computer_state)
-        elif computer_state.cycle == CycleState.EXECUTE:
+        elif (
+            computer_state.cycle == CycleState.EXECUTE
+            or computer_state.cycle == CycleState.FETCH_OP
+        ):
             self.execute_instruction(computer_state)
         return computer_state
 
@@ -66,7 +71,8 @@ class ControlUnit:
         computer_state.actual_insstruction = self.decode_instruction(
             computer_state.system_registers.ir
         )
-        computer_state.cycle = CycleState.EXECUTE
+        # computer_state.cycle = CycleState.EXECUTE
+        computer_state.cycle = CycleState.FETCH_OP
 
     def decode_operand(self, binary):
         """Decodifica un operando binario a su representación simbólica"""
