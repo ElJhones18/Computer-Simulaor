@@ -9,6 +9,9 @@ from computer.cpu.execution_helpers.aritmetic_instruction import (
     fetch_operands,
     execute_operation,
 )
+from computer.cpu.execution_helpers.control_instruction import (
+    execute_control_instruction,
+)
 
 
 class ControlUnit:
@@ -158,7 +161,7 @@ class ControlUnit:
             or opcode == OpcodesAndTypes.opcodes.get("JZ")
             or opcode == OpcodesAndTypes.opcodes.get("JN")
         ):
-            print("Operación de salto")
+            execute_control_instruction(computer_state)
         else:
             raise ValueError(f"Operación no soportada: {opcode}")
 

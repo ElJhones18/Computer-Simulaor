@@ -1,6 +1,5 @@
-inicio: MOV R1 5    ; Cargar 5 en R1
-        MOV R2 3    ; Cargar 3 en R2
-        ADD R1 R2   ; R1 = R1 + R2
-        JZ  fin     ; Si es cero, saltar a fin
-        MUL R1 R2   ; R1 = R1 * R2
-fin:    MOV #10 R1  ; Guardar R1 en memoria
+        MOV R3 3   ; contador desde 3
+inicio: SUB R3 1
+        JZ  fin    ; cuando el contador llega
+        JMP inicio ; a cero, movemos un 15
+fin:    MOV #7 15  ; a la dirección 7 de memoria

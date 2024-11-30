@@ -32,8 +32,19 @@ def execute_operation(computer_state: ComputerState):
                 computer_state.cycle = CycleState.WAITING
             if int(computer_state.alu.result) == 0:
                 computer_state.psw.zero = True
-            if int(computer_state.alu.result) < 0:
-                computer_state.psw.negative = True
+            else:
+                computer_state.psw.zero = False
+            if computer_state.alu.operation == "-":
+                if (
+                    int(
+                        int(computer_state.alu.operator1)
+                        - int(computer_state.alu.operator2)
+                    )
+                    < 0
+                ):
+                    computer_state.psw.negative = True
+                else:
+                    computer_state.psw.negative = False
             computer_state.cycle = CycleState.WRITE
             computer_state.actual_micro_operation = 0
 

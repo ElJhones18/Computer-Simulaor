@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_ace import st_ace
 from .components import (
     cpu_value_container,
     display_bus,
@@ -23,7 +24,7 @@ class UserInterface:
 
         # Contenedor principal
         with st.container():
-            col1, col2, col3 = st.columns([1.5, 1, 2])
+            col1, col2, col3 = st.columns([1.8, 1.5, 2])
 
             # Columna izquierda (CPU y registros)
             with col1:
@@ -45,7 +46,7 @@ class UserInterface:
                 with subcol:
                     self.simulation_info()
 
-            col4, col5, col6 = st.columns([1.5, 1, 2])
+            col4, col5, col6 = st.columns([1.8, 1.5, 2])
             with col4:
                 self.display_simulation_controls(self.simulator)
             with col5:
@@ -169,11 +170,7 @@ class UserInterface:
 
     def display_input_device(self):
         st.markdown("### Dispositivo de entrada")
-        program_input: str = st.text_area(
-            label="J.E.S.-Assembly",
-            placeholder="Escriba su programa aquí...",
-            height=180,
-        )
+        program_input = st_ace(language="assembly_x86", theme="monokai", height=150, auto_update=True)
 
         col1, col2 = st.columns([0.3, 0.7])
         with col1:

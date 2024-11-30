@@ -25,7 +25,7 @@ class Simulator:
     input/output
     """
 
-    def load_program(self, program: str):        
+    def load_program(self, program: str):
         """Carga un programa en memoria"""
         self.restart()
         binary_instructions = self.parser.parse_program(program)
@@ -37,6 +37,8 @@ class Simulator:
 
         memory: Memory = st.session_state.computer_state.program_memory
         for i, binary in enumerate(binary_instructions):
+            if i >= len(memory.memory):
+                raise IndexError("El programa no cabe en la memoria de programa")
             address = memory.memory[i][0]
             memory.write(address, binary)
         st.session_state.computer_state.cycle = CycleState.FETCH_INS
