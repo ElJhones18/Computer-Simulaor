@@ -39,6 +39,7 @@ def get_origen(operand: str, computer_state: ComputerState):
     type = operand[:2]
     value = operand[2:6]
     if type == OpcodesAndTypes.TIPO_NUMERO:
+        value = value.zfill(16)
         return value
     elif type == OpcodesAndTypes.TIPO_REGISTRO:
         return computer_state.user_registers.get_register("R" + f"{int(value, 2)}")

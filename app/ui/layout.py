@@ -9,6 +9,8 @@ from .components import (
 )
 from .styles import apply_global_styles
 from computer.simulator import Simulator
+from computer.io.input_device import display_input_device
+from computer.io.output_device import display_output_device
 
 
 class UserInterface:
@@ -42,23 +44,26 @@ class UserInterface:
                     self.display_data_memory()
                 with subcol2:
                     self.display_program_memory()
-                _, subcol, _ = st.columns([1, 20, 1])
-                with subcol:
-                    self.simulation_info()
+                # _, subcol, _ = st.columns([1, 20, 1])
+                # with subcol:
+                #     pass
 
             col4, col5, col6 = st.columns([1.8, 1.5, 2])
             with col4:
                 self.display_simulation_controls(self.simulator)
             with col5:
                 self.display_output_device()
-                # with col6:
+            with col6:
+                self.simulation_info()
+
+    """Simulation components"""
 
     def simulation_info(self):
         st.markdown("### Información del simulador")
         # st.write(f" **Señal de control 1** = *Pedir a memoria*")
         # st.write(f" **Señal de control 0** = *Escribir en memoria*")
         st.write(
-            "El simulador solo soporta ingreso de números enteros positivos de hasta 4 bits de manera inmediata. internamente se pueden manejar números de hasta 16 bits."
+            "El simulador solo soporta ingreso de números enteros positivos de hasta 4 bits de manera inmediata. Internamente se pueden manejar números de hasta 16 bits."
         )
         st.write("La ALU devuelve cero si el resultado es negativo.")
         st.write(
@@ -75,8 +80,6 @@ class UserInterface:
                 disabled=st.session_state.computer_state.cycle.value == "WAITING",
             ):
                 simulator.step()
-                # if st.session_state.computer_state.cycle.value == "WAITING":
-                #     simulator.restart()
                 st.rerun()
 
         with col_controls[1]:
@@ -84,9 +87,16 @@ class UserInterface:
                 simulator.restart()
                 st.rerun()
 
+        size = len(st.session_state.computer_state.program_memory.get_all()) - 1
+        actual_line = int(st.session_state.computer_state.system_registers.pc, 2) - size
+        if st.session_state.computer_state.cycle.value == "WAITING":
+            actual_line = ""
+        st.write(f"##### **Línea actual** >>  *{actual_line}*")
         st.write(
-            f"##### **Instrucción actual** >>  *{st.session_state.computer_state.actual_insstruction}*"
+            f"##### **Instrucción decodificada** >>  *{st.session_state.computer_state.actual_insstruction}*"
         )
+
+    """Computer components"""
 
     def display_data_memory(self):
         st.markdown("### Memoria")
@@ -168,39 +178,10 @@ class UserInterface:
             ]
             memory_table("Registros de Usuario", registers_data)
 
-    def display_input_device(self):
-        st.markdown("### Dispositivo de entrada")
-        program_input = st_ace(language="assembly_x86", theme="monokai", height=150, auto_update=True)
+    """I/O devices"""
 
-        col1, col2 = st.columns([0.3, 0.7])
-        with col1:
-            if st.button(
-                "Cargar",
-                disabled=st.session_state.computer_state.cycle.value != "WAITING",
-            ):
-                with col2:
-                    try:
-                        self.simulator.load_program(program_input)
-                        st.success("Programa cargado correctamente")
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Error: {e}")
+    def display_input_device(self):
+        display_input_device(self.simulator)
 
     def display_output_device(self):
-        st.markdown("### Dispositivo de salida")
-        st.markdown(
-            f"""
-                        <div style="
-                            border: 2px solid #00FFFF;
-                            padding: 10px;
-                            margin: 16px 0;
-                            border-radius: 5px;
-                            color: white;
-                            text-shadow: 0 0 5px #00FFFF;
-                            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-                        ">
-                            {">>"} Salida
-                        </div>
-                        """,
-            unsafe_allow_html=True,
-        )
+        display_output_device()
