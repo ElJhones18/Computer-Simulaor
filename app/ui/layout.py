@@ -125,6 +125,7 @@ class UserInterface:
             psw_container(
                 st.session_state.computer_state.psw.zero,
                 st.session_state.computer_state.psw.negative,
+                st.session_state.computer_state.psw.overflow,
                 st.session_state.computer_state.psw.interrupt,
             )
         with subcol6:

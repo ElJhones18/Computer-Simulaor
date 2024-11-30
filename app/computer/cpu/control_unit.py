@@ -5,6 +5,10 @@ from computer.assembly.opcodes_and_types import OpcodesAndTypes
 from computer.cpu.execution_helpers.transfer_instruction import (
     execute_transfer_instruction,
 )
+from computer.cpu.execution_helpers.aritmetic_instruction import (
+    fetch_operands,
+    execute_operation,
+)
 
 
 class ControlUnit:
@@ -28,6 +32,8 @@ class ControlUnit:
             or computer_state.cycle == CycleState.FETCH_OP
         ):
             self.execute_instruction(computer_state)
+        elif computer_state.cycle == CycleState.WRITE:
+            self.write_output(computer_state)
         return computer_state
 
     """
@@ -130,7 +136,10 @@ class ControlUnit:
             or opcode == OpcodesAndTypes.opcodes.get("MUL")
             or opcode == OpcodesAndTypes.opcodes.get("DIV")
         ):
-            print("Operación aritmética")
+            if computer_state.cycle == CycleState.FETCH_OP:
+                fetch_operands(computer_state)
+            elif computer_state.cycle == CycleState.EXECUTE:
+                execute_operation(computer_state)
         elif (
             opcode == OpcodesAndTypes.opcodes.get("JMP")
             or opcode == OpcodesAndTypes.opcodes.get("JZ")
@@ -139,3 +148,48 @@ class ControlUnit:
             print("Operación de salto")
         else:
             raise ValueError(f"Operación no soportada: {opcode}")
+
+    """write output"""
+
+    def write_output(self, computer_state: ComputerState):
+        destination = computer_state.system_registers.ir[4:10]
+        type = destination[:2]
+        address = destination[2:6]
+        if type == self.TIPO_REGISTRO:
+            computer_state.user_registers.set_register(
+                f"R{int(address, 2)}", computer_state.alu.result
+            )
+            computer_state.cycle = CycleState.FETCH_INS
+            computer_state.system_registers.pc = (
+                f"{int(computer_state.system_registers.pc, 2) + 1:04b}"
+            )
+        elif type == self.TIPO_MEMORIA:
+            match computer_state.actual_micro_operation:
+                case 0:
+                    computer_state.system_bus.control_bus = self.write_signal
+                    computer_state.actual_micro_operation += 1
+                case 1:
+                    computer_state.system_registers.mar = address
+                    computer_state.actual_micro_operation += 1
+                case 2:
+                    computer_state.system_bus.address_bus = (
+                        computer_state.system_registers.mar
+                    )
+                    computer_state.actual_micro_operation += 1
+                case 3:
+                    computer_state.system_registers.mbr = computer_state.alu.result
+                    computer_state.actual_micro_operation += 1
+                case 4:
+                    computer_state.system_bus.data_bus = (
+                        computer_state.system_registers.mbr
+                    )
+                    computer_state.actual_micro_operation += 1
+                case 5:
+                    computer_state.data_memory.write(
+                        address, computer_state.system_registers.mbr
+                    )
+                    computer_state.actual_micro_operation = 0
+                    computer_state.cycle = CycleState.FETCH_INS
+                    computer_state.system_registers.pc = (
+                        f"{int(computer_state.system_registers.pc, 2) + 1:04b}"
+                    )
