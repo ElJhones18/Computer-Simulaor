@@ -54,12 +54,25 @@ class ControlUnit:
                 )
                 computer_state.actual_micro_operation += 1
             case 3:
-                computer_state.system_bus.data_bus = computer_state.program_memory.read(
-                    computer_state.system_registers.mar
-                )
-                if computer_state.system_bus.data_bus == "0000000000000000":
+                if (
+                    computer_state.program_memory.read(
+                        computer_state.system_registers.mar
+                    )
+                    is None
+                    or computer_state.program_memory.read(
+                        computer_state.system_registers.mar
+                    )
+                    == "0000000000000000"
+                ):
                     computer_state.cycle = CycleState.WAITING
-                computer_state.actual_micro_operation += 1
+                    computer_state.actual_micro_operation = 0
+                else:
+                    computer_state.system_bus.data_bus = (
+                        computer_state.program_memory.read(
+                            computer_state.system_registers.mar
+                        )
+                    )
+                    computer_state.actual_micro_operation += 1
             case 4:
                 computer_state.system_registers.mbr = computer_state.system_bus.data_bus
                 computer_state.actual_micro_operation += 1

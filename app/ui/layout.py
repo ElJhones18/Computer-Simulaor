@@ -39,15 +39,30 @@ class UserInterface:
                 subcol1, subcol2 = st.columns(2)
                 with subcol1:
                     self.display_data_memory()
-
                 with subcol2:
                     self.display_program_memory()
+                _, subcol, _ = st.columns([1, 20, 1])
+                with subcol:
+                    self.simulation_info()
 
             col4, col5, col6 = st.columns([1.5, 1, 2])
             with col4:
                 self.display_simulation_controls(self.simulator)
             with col5:
                 self.display_output_device()
+                # with col6:
+
+    def simulation_info(self):
+        st.markdown("### Información del simulador")
+        # st.write(f" **Señal de control 1** = *Pedir a memoria*")
+        # st.write(f" **Señal de control 0** = *Escribir en memoria*")
+        st.write(
+            "El simulador solo soporta ingreso de números enteros positivos de hasta 4 bits de manera inmediata. internamente se pueden manejar números de hasta 16 bits."
+        )
+        st.write("La ALU devuelve cero si el resultado es negativo.")
+        st.write(
+            "Si ocurre sobreflujo o division por cero, el programa cargado terminará su ejecución."
+        )
 
     def display_simulation_controls(self, simulator: Simulator):
         st.write("### Controles de la simulación")
@@ -152,13 +167,13 @@ class UserInterface:
             ]
             memory_table("Registros de Usuario", registers_data)
 
-    def display_input_device(self): 
+    def display_input_device(self):
         st.markdown("### Dispositivo de entrada")
         program_input: str = st.text_area(
             label="J.E.S.-Assembly",
             placeholder="Escriba su programa aquí...",
             height=180,
-        )   
+        )
 
         col1, col2 = st.columns([0.3, 0.7])
         with col1:

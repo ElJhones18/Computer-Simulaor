@@ -27,6 +27,7 @@ class Simulator:
 
     def load_program(self, program: str):        
         """Carga un programa en memoria"""
+        self.restart()
         binary_instructions = self.parser.parse_program(program)
 
         # for i, inst in enumerate(binary_instructions):
