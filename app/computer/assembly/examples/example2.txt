@@ -1,0 +1,9 @@
+        ; COMPARADOR
+        MOV R1 12   ; Valor 1
+        MOV R2 13   ; Valor 2
+        SUB R1 R2
+        JNE Menor
+        MOV #7 2    ; Mostrar 2 si es mayor o igual
+        JMP Fin
+Menor:  MOV #7 1   ; Mostrar 1 si es menor
+Fin:

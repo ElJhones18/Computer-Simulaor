@@ -8,7 +8,8 @@ class OpcodesAndTypes:
         "ADD": "0100",
         "JMP": "0101",
         "JZ": "0110",
-        "JN": "0111",
+        "JNE": "0111",
+        "JNZ": "1000",
     }
 
     # Tipos de operandos (2 bits)

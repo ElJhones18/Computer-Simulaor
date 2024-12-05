@@ -1,5 +1,6 @@
+        ; EJEMPLO LOOP
         MOV R3 3   ; contador desde 3
-inicio: SUB R3 1
-        JZ  fin    ; cuando el contador llega
-        JMP inicio ; a cero, movemos un 15
+loop:   SUB R3 1
+        ;JZ  fin   ; cuando el contador llega
+        JNZ loop ; a cero, movemos un 15
 fin:    MOV #7 15  ; a la dirección 7 de memoria

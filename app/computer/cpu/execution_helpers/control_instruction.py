@@ -15,7 +15,14 @@ def execute_control_instruction(computer_state: ComputerState):
             computer_state.system_registers.pc = (
                 f"{int(computer_state.system_registers.pc, 2) + 1:04b}"
             )
-    elif codop == OpcodesAndTypes.opcodes.get("JN"):
+    elif codop == OpcodesAndTypes.opcodes.get("JNZ"):
+        if not computer_state.psw.zero:
+            computer_state.system_registers.pc = etiqueta
+        else:
+            computer_state.system_registers.pc = (
+                f"{int(computer_state.system_registers.pc, 2) + 1:04b}"
+            )
+    elif codop == OpcodesAndTypes.opcodes.get("JNE"):
         if computer_state.psw.negative:
             computer_state.system_registers.pc = etiqueta
         else:

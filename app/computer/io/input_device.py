@@ -7,7 +7,7 @@ from computer.simulator import Simulator
 def display_input_device(simulator: Simulator):
     st.markdown("### Dispositivo de entrada")
     program_input = st_ace(
-        language="assembly_x86", theme="monokai", height=150, auto_update=True
+        language="assembly_x86", theme="monokai", height=160, auto_update=True
     )
 
     col1, col2 = st.columns([0.3, 0.7])

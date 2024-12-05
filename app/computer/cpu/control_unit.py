@@ -159,7 +159,8 @@ class ControlUnit:
         elif (
             opcode == OpcodesAndTypes.opcodes.get("JMP")
             or opcode == OpcodesAndTypes.opcodes.get("JZ")
-            or opcode == OpcodesAndTypes.opcodes.get("JN")
+            or opcode == OpcodesAndTypes.opcodes.get("JNZ")
+            or opcode == OpcodesAndTypes.opcodes.get("JNE")
         ):
             execute_control_instruction(computer_state)
         else:

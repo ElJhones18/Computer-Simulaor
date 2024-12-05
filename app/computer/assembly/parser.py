@@ -99,7 +99,7 @@ class Parser:
         binary = self.opcodes[opcode]
 
         # Procesar operandos según el tipo de instrucción
-        if opcode in ["JMP", "JZ", "JN"]:
+        if opcode in ["JMP", "JZ", "JNE", "JNZ"]:
             if len(tokens) != 2:
                 raise ValueError(f"Instrucción {opcode} requiere una etiqueta")
             binary += self.encode_operand(
